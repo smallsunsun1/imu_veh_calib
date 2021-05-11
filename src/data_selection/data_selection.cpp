@@ -2,16 +2,16 @@
 
 #define PI 3.1415926
 
-data_selection::data_selection() {}
+DataSelection::DataSelection() {}
 
-void data_selection::selectData(OdomDataList &odoDatas, CamDataList &camDatas,
-                                std::vector<data_selection::sync_data> &sync_result) {
+void DataSelection::selectData(OdomDataList &odoDatas, CamDataList &camDatas,
+                               std::vector<DataSelection::sync_data> &sync_result) {
   startPosAlign(odoDatas, camDatas);
   // get rid of cam data ( deltaTheta = nan, tlc_length<1e-4,axis(1)<0.96), and align cam and odo data
   camOdoAlign(odoDatas, camDatas, sync_result);
 
   // get rid of the odo data whose distance is less than 1e-4 and whose theta sign isn't same
-  std::vector<data_selection::sync_data> vec_sync_tmp;
+  std::vector<DataSelection::sync_data> vec_sync_tmp;
   OdomDataList odo_matches;
   CamDataList cam_matches;
   int size = std::min(camDatas.size(), odoDatas.size());
@@ -34,8 +34,8 @@ void data_selection::selectData(OdomDataList &odoDatas, CamDataList &camDatas,
   camDatas.swap(cam_matches);
   odoDatas.swap(odo_matches);
 }
-void data_selection::camOdoAlign(OdomDataList &odoDatas, CamDataList &camDatas,
-                                 std::vector<data_selection::sync_data> &sync_result) {
+void DataSelection::camOdoAlign(OdomDataList &odoDatas, CamDataList &camDatas,
+                                std::vector<DataSelection::sync_data> &sync_result) {
   int id_odo = 2;
   OdomDataList odoDatas_tmp;
   CamDataList camDatas_tmp;
@@ -47,7 +47,7 @@ void data_selection::camOdoAlign(OdomDataList &odoDatas, CamDataList &camDatas,
     if (tlc_length < 1e-4) continue;
     if (camDatas[i].axis(1) > -0.96) continue;
 
-    data_selection::odo_data odo_start, odo_end;
+    DataSelection::odo_data odo_start, odo_end;
     id_odo -= 2;
     double t_interval = fabs(odoDatas[id_odo].time - camDatas[i].start_t);
     while (fabs(odoDatas[++id_odo].time - camDatas[i].start_t) < t_interval)
@@ -109,9 +109,9 @@ void data_selection::camOdoAlign(OdomDataList &odoDatas, CamDataList &camDatas,
     odoDatas[odo_end_id].v_right = v_right_end;
 
     // get the average ang_vel and lin_vel between camDatas[i].start_t and camDatas[i].end_t
-    data_selection::odo_data odo_tmp;            // odo_tmp
+    DataSelection::odo_data odo_tmp;             // odo_tmp
     odo_tmp.time = odoDatas[odo_start_id].time;  // odo_tmp
-    data_selection::sync_data sync_tmp;
+    DataSelection::sync_data sync_tmp;
     if (odo_end_id - odo_start_id > 1) {
       double dis_left_sum = 0.0, dis_right_sum = 0.0;
       for (int j = odo_start_id; j < odo_end_id; j++) {
@@ -181,7 +181,7 @@ void data_selection::camOdoAlign(OdomDataList &odoDatas, CamDataList &camDatas,
   odoDatas.swap(odoDatas_tmp);
 }
 
-void data_selection::startPosAlign(OdomDataList &odoDatas, CamDataList &camDatas) {
+void DataSelection::startPosAlign(OdomDataList &odoDatas, CamDataList &camDatas) {
   double t0_cam = camDatas[0].start_t;
   double t0_odo = odoDatas[0].time;
   if (t0_cam > t0_odo) {

@@ -1,30 +1,27 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "csm/algos.h"
-#include <iostream>
-#include <fstream>
-#include <unordered_map>
 #include <boost/lexical_cast.hpp>
+#include <fstream>
+#include <iostream>
+#include <unordered_map>
+#include "csm/algos.h"
 
 /// @Vance: 用于读取配置文件的结构
-struct sm_config
-{
-    std::unordered_map<std::string, std::string> params;
+struct sm_config {
+  std::unordered_map<std::string, std::string> params;
 
-    void readParams(std::string filename="../../cfg/sm_config.txt");
+  void readParams(std::string filename = "../../cfg/sm_config.txt");
 
-    template <class T>
-    T getParams(const std::string& key) const
-    {
-        auto iter = params.find(key);
-        if (iter == params.end()) {
-            std::cerr << "[icp][error] Parameter name " << key << " not found!" << std::endl;
-        }
-        return boost::lexical_cast<T>(iter->second);
+  template <class T>
+  T getParams(const std::string& key) const {
+    auto iter = params.find(key);
+    if (iter == params.end()) {
+      std::cerr << "[icp][error] Parameter name " << key << " not found!" << std::endl;
     }
+    return boost::lexical_cast<T>(iter->second);
+  }
 };
-
 
 /**
  * @brief 设置icp参数
@@ -33,5 +30,4 @@ struct sm_config
  */
 void set_params(struct sm_params* params, const struct sm_config* config);
 
-
-#endif // PARAMETER_READER_H
+#endif  // PARAMETER_READER_H

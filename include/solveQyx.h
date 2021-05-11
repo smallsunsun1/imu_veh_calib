@@ -32,11 +32,11 @@ class SolveQyx {
  public:
   SolveQyx();
 
-  bool estimateRyx(std::vector<data_selection::sync_data> sync_result, Eigen::Matrix3d &Ryx);
-  void correctCamera(std::vector<data_selection::sync_data> &sync_result,
-                     std::vector<data_selection::cam_data> &camDatas, Eigen::Matrix3d Ryx);
+  bool estimateRyx(std::vector<DataSelection::sync_data> sync_result, Eigen::Matrix3d &Ryx);
+  void correctCamera(std::vector<DataSelection::sync_data> &sync_result, std::vector<DataSelection::cam_data> &camDatas,
+                     Eigen::Matrix3d Ryx);
 
-  void refineExPara(std::vector<data_selection::sync_data> sync_result, cSolver::calib_result &internelPara,
+  void refineExPara(std::vector<DataSelection::sync_data> sync_result, cSolver::calib_result &internelPara,
                     Eigen::Matrix3d Ryx);
   // bool esExParaByCeres(const std::vector<data_selection::sync_data> &calib_data,cSolver::calib_result &res);
 

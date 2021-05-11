@@ -1,9 +1,9 @@
 #ifndef H_LASER_DATA_JSON
 #define H_LASER_DATA_JSON
 
+#include "algos.h"
 #include "egsl/gsl_eigen.h"
 #include "laser_data.h"
-#include "algos.h"
 
 /**
  * @brief 对laser_data进行赋值，用于线上机器人数据生成icp匹配需要的数据
@@ -14,9 +14,8 @@
  * @param[in]    nrays      激光每帧的点数
  * @param[in]    frame_id   帧数id
  */
-void set_laser_frame(LDP ldp, const int* range, const char* flags,
-                     const double* odom, int nrays, const unsigned long frame_id,
-                     const long long time_stamp);
+void set_laser_frame(LDP ldp, const int* range, const char* flags, const double* odom, int nrays,
+                     const unsigned long frame_id, const long long time_stamp);
 
 /**
  * @brief 对laser_data进行赋值，用于线下从数据集中读取数据
@@ -27,8 +26,7 @@ void set_laser_frame(LDP ldp, const int* range, const char* flags,
  *
  * @return  成功返回1，文件不存在会造成失败
  */
-bool ld_from_yogo_stream(LDP ldp, const char* file_path,
-                         const int nrays, const unsigned long frame_id);
+bool ld_from_yogo_stream(LDP ldp, const char* file_path, const int nrays, const unsigned long frame_id);
 
 /**
  * @brief 从关键帧中对laser_data进行赋值，用于图优化中提取新边时做icp匹配

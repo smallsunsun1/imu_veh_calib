@@ -13,7 +13,7 @@
 SolveQyx::SolveQyx() {}
 
 // 这个函数用于计算yx方向的旋转
-bool SolveQyx::estimateRyx(std::vector<data_selection::sync_data> sync_result, Eigen::Matrix3d &Ryx) {
+bool SolveQyx::estimateRyx(std::vector<DataSelection::sync_data> sync_result, Eigen::Matrix3d &Ryx) {
   size_t motionCnt = sync_result.size();
   Eigen::MatrixXd M(motionCnt * 4, 4);
   M.setZero();
@@ -70,14 +70,14 @@ bool SolveQyx::estimateRyx(std::vector<data_selection::sync_data> sync_result, E
 }
 
 // 根据上面函数计算得到的yx结果，来对相机的坐标信息进行变换
-void SolveQyx::correctCamera(std::vector<data_selection::sync_data> &sync_result,
-                             std::vector<data_selection::cam_data> &camDatas, Eigen::Matrix3d Ryx) {
+void SolveQyx::correctCamera(std::vector<DataSelection::sync_data> &sync_result,
+                             std::vector<DataSelection::cam_data> &camDatas, Eigen::Matrix3d Ryx) {
   if (sync_result.size() != camDatas.size()) {
     std::cerr << "ERROR!! correctCamera: sync_result.size() != camDatas.size()" << std::endl;
     return;
   }
-  std::vector<data_selection::sync_data> sync_tmp;
-  std::vector<data_selection::cam_data> cam_tmp;
+  std::vector<DataSelection::sync_data> sync_tmp;
+  std::vector<DataSelection::cam_data> cam_tmp;
   for (unsigned int i = 0; i < sync_result.size(); ++i) {
     Eigen::Vector3d tlc_cam = camDatas[i].tlc;
     Eigen::Vector3d tlc_corrected = Ryx * tlc_cam;
@@ -92,7 +92,7 @@ void SolveQyx::correctCamera(std::vector<data_selection::sync_data> &sync_result
   camDatas.swap(cam_tmp);
 }
 
-void SolveQyx::refineExPara(std::vector<data_selection::sync_data> sync_result, cSolver::calib_result &internelPara,
+void SolveQyx::refineExPara(std::vector<DataSelection::sync_data> sync_result, cSolver::calib_result &internelPara,
                             Eigen::Matrix3d Ryx) {
   std::cout << std::endl << "there are  " << sync_result.size() << " datas for refining extrinsic paras" << std::endl;
   // 相机和Odometry的位姿变换矩阵
@@ -104,7 +104,7 @@ void SolveQyx::refineExPara(std::vector<data_selection::sync_data> sync_result, 
   // 获取Camera和Odom之间的平移向量rx和ry
   Eigen::Vector2d trc;
   trc << internelPara.l[0], internelPara.l[1];
-  // 
+  //
   for (int i = 0; i < int(sync_result.size()) - 3; ++i) {
     q_cam.push_back(sync_result[i].qcl_cam);
     t_cam.push_back(sync_result[i].tcl_cam);
@@ -113,9 +113,9 @@ void SolveQyx::refineExPara(std::vector<data_selection::sync_data> sync_result, 
     double vel_L = sync_result[i].velocity_left, vel_R = sync_result[i].velocity_right;
     // 根据左右轮转速和左右轮半径计算速度V，根据左右轮转速和左右轮半径计算
     double v = 0.5 * (r_L * vel_L + r_R * vel_R), omega = (r_R * vel_R - r_L * vel_L) / axle;
-    // 
+    //
     Eigen::Quaterniond qlc_odo;
-    // 
+    //
     Eigen::Vector3d tlc_odo, tcl_odo;
     double o_theta = omega * sync_result[i].T;
     double t1, t2;
@@ -136,11 +136,11 @@ void SolveQyx::refineExPara(std::vector<data_selection::sync_data> sync_result, 
     Eigen::AngleAxisd yawAngle(Eigen::AngleAxisd(eulerAngle(2), Eigen::Vector3d::UnitZ()));
     // 对应轮速计前后时刻之间的位姿变换
     qlc_odo = yawAngle * pitchAngle * rollAngle;
-    // 
+    //
     tlc_odo = {v * sync_result[i].T * t1, v * sync_result[i].T * t2, 0.0};
-    // 
+    //
     tcl_odo = -qlc_odo.matrix().inverse() * tlc_odo;
-    // 
+    //
     Eigen::Quaterniond qcl_odo(qlc_odo.matrix().inverse());
 
     q_odo.push_back(qcl_odo);

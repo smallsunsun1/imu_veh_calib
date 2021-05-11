@@ -5,7 +5,7 @@
 
 #ifdef __cplusplus
 namespace CSM {}
-//extern "C" {
+// extern "C" {
 #endif
 
 //#include "json_journal.h"

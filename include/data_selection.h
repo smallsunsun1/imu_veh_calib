@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-class data_selection {
+class DataSelection {
  public:
   struct odo_data {
     double time;     // 对应时间
@@ -54,14 +54,14 @@ class data_selection {
   };
   void startPosAlign(std::vector<odo_data> &odoDatas, std::vector<cam_data> &camDatas);
   void selectData(std::vector<odo_data> &odoDatas, std::vector<cam_data> &camDatas,
-                  std::vector<data_selection::sync_data> &sync_result);
+                  std::vector<DataSelection::sync_data> &sync_result);
 
   void camOdoAlign(std::vector<odo_data> &odoDatas, std::vector<cam_data> &camDatas,
                    std::vector<sync_data> &sync_result);
-  using OdomDataList =  std::vector<data_selection::odo_data>;
-  using CamDataList = std::vector<data_selection::cam_data>;
-  using SyncDataList = std::vector<data_selection::sync_data>;
-  data_selection();
+  using OdomDataList = std::vector<DataSelection::odo_data>;
+  using CamDataList = std::vector<DataSelection::cam_data>;
+  using SyncDataList = std::vector<DataSelection::sync_data>;
+  DataSelection();
 };
 
 #endif /* INCLUDE_DATA_SELECTION_ */

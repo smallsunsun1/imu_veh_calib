@@ -23,11 +23,11 @@ bool halfFreq = false;
 int frame_index = 0;
 
 // extract images with same timestamp from two topics
-void CalcProcess(data_selection::OdomDataList& odom_datas, data_selection::CamDataList& cam_datas) {
+void CalcProcess(DataSelection::OdomDataList& odom_datas, DataSelection::CamDataList& cam_datas) {
   SolveQyx cSolveQyx;
   std::cout << "============ calibrating... ===============" << std::endl;
-  data_selection ds;
-  std::vector<data_selection::sync_data> sync_result;
+  DataSelection ds;
+  std::vector<DataSelection::sync_data> sync_result;
   ds.selectData(odom_datas, cam_datas, sync_result);
 
   // first estimate the Ryx and correct tlc of camera
