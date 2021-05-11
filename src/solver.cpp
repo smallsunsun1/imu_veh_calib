@@ -1,16 +1,16 @@
 ﻿#include <iostream>
 #include "solver.h"
-#include <eigen3/Eigen/Eigenvalues>
+#include "Eigen/Eigenvalues"
 #include "data_selection.h"
 #include "utils.h"
 
 cSolver::cSolver() {}
 
-void cSolver::calib(std::vector<DataSelection::sync_data> &calib_data, int outliers_iterations, calib_result &res) {
+void cSolver::calib(std::vector<data_selection::SyncData> &calib_data, int outliers_iterations, calib_result &res) {
   std::cout << std::endl << "there are " << calib_data.size() << " datas for calibrating!" << std::endl;
-  std::vector<DataSelection::sync_data> calib_history[outliers_iterations + 1];
+  std::vector<data_selection::SyncData> calib_history[outliers_iterations + 1];
   // calib_result res;
-  std::vector<DataSelection::sync_data> outliers_data;
+  std::vector<data_selection::SyncData> outliers_data;
 
   for (int iteration = 0; iteration <= outliers_iterations; iteration++) {
     calib_history[iteration] = calib_data;
@@ -73,7 +73,7 @@ void cSolver::calib(std::vector<DataSelection::sync_data> &calib_data, int outli
       if (xy || theta) noutliers++;
     }
 
-    std::vector<DataSelection::sync_data> n;
+    std::vector<data_selection::SyncData> n;
     for (unsigned int i = 0; i < calib_data.size(); i++) {
       if (!calib_data[i].mark_as_outlier)
         n.push_back(calib_data[i]);
@@ -112,7 +112,7 @@ void cSolver::calib(std::vector<DataSelection::sync_data> &calib_data, int outli
   return;
 }
 
-bool cSolver::solve(const std::vector<DataSelection::sync_data> &calib_data, int mode, double max_cond_number,
+bool cSolver::solve(const std::vector<data_selection::SyncData> &calib_data, int mode, double max_cond_number,
                     calib_result &res) {
   /*!<!--####################		FIRST STEP: estimate J21 and J22  	#################-->*/
   double J21, J22;
@@ -128,7 +128,7 @@ bool cSolver::solve(const std::vector<DataSelection::sync_data> &calib_data, int
   int n = (int)calib_data.size();
 
   for (int i = 0; i < n; i++) {
-    const DataSelection::sync_data &t = calib_data[i];
+    const data_selection::SyncData &t = calib_data[i];
     L_i(0) = t.T * t.velocity_left;
     L_i(1) = t.T * t.velocity_right;
     //    std::cout << (L_i * L_i.transpose()) << '\n' << std::endl;
@@ -173,7 +173,7 @@ bool cSolver::solve(const std::vector<DataSelection::sync_data> &calib_data, int
 
   // int nused = 0;
   for (int k = 0; k < n; k++) {
-    const DataSelection::sync_data &t = calib_data[k];
+    const data_selection::SyncData &t = calib_data[k];
     o_theta = t.T * (J21 * t.velocity_left + J22 * t.velocity_right);
     // double w0 = o_theta / t.T;
 
@@ -317,7 +317,7 @@ Eigen::VectorXd cSolver::x_given_lambda(const Eigen::MatrixXd &M, const double &
   return v0;
 }
 
-void cSolver::compute_disagreement(DataSelection::sync_data &calib_data, const calib_result &res) {
+void cSolver::compute_disagreement(data_selection::SyncData &calib_data, const calib_result &res) {
   double J11 = res.radius_l / 2;
   double J12 = res.radius_r / 2;
   double J21 = -res.radius_l / res.axle;
@@ -360,7 +360,7 @@ void cSolver::compute_disagreement(DataSelection::sync_data &calib_data, const c
   }
 }
 
-void cSolver::estimate_noise(std::vector<DataSelection::sync_data> &calib_data, const calib_result &res, double &std_x,
+void cSolver::estimate_noise(std::vector<data_selection::SyncData> &calib_data, const calib_result &res, double &std_x,
                              double &std_y, double &std_th) {
   int n = calib_data.size();
   double err_sm[3][n];
@@ -394,7 +394,7 @@ double cSolver::calculate_sd(const double array[], const int s, const int e) {
   return sd;
 }
 
-Eigen::MatrixXd cSolver::compute_fim(const std::vector<DataSelection::sync_data> &calib_data, const calib_result &res,
+Eigen::MatrixXd cSolver::compute_fim(const std::vector<data_selection::SyncData> &calib_data, const calib_result &res,
                                      const Eigen::Matrix3d &inf_sm) {
   Eigen::MatrixXd fim = Eigen::MatrixXd::Zero(6, 6);
 
@@ -406,7 +406,7 @@ Eigen::MatrixXd cSolver::compute_fim(const std::vector<DataSelection::sync_data>
 
     // jacobian_radius_l
     {
-      DataSelection::sync_data data0 = calib_data[i], data1 = calib_data[i], data2 = calib_data[i],
+      data_selection::SyncData data0 = calib_data[i], data1 = calib_data[i], data2 = calib_data[i],
                                data3 = calib_data[i];
       calib_result res0 = res, res1 = res, res2 = res, res3 = res;
       res0.radius_l -= eps;
@@ -426,7 +426,7 @@ Eigen::MatrixXd cSolver::compute_fim(const std::vector<DataSelection::sync_data>
 
     // jacobian_radius_r
     {
-      DataSelection::sync_data data0 = calib_data[i], data1 = calib_data[i], data2 = calib_data[i],
+      data_selection::SyncData data0 = calib_data[i], data1 = calib_data[i], data2 = calib_data[i],
                                data3 = calib_data[i];
       calib_result res0 = res, res1 = res, res2 = res, res3 = res;
       res0.radius_r -= eps;
@@ -445,7 +445,7 @@ Eigen::MatrixXd cSolver::compute_fim(const std::vector<DataSelection::sync_data>
     }
     // jacobian_axle
     {
-      DataSelection::sync_data data0 = calib_data[i], data1 = calib_data[i], data2 = calib_data[i],
+      data_selection::SyncData data0 = calib_data[i], data1 = calib_data[i], data2 = calib_data[i],
                                data3 = calib_data[i];
       calib_result res0 = res, res1 = res, res2 = res, res3 = res;
       res0.axle -= eps;
@@ -464,7 +464,7 @@ Eigen::MatrixXd cSolver::compute_fim(const std::vector<DataSelection::sync_data>
     }
     // jacobian_l[0]
     {
-      DataSelection::sync_data data0 = calib_data[i], data1 = calib_data[i], data2 = calib_data[i],
+      data_selection::SyncData data0 = calib_data[i], data1 = calib_data[i], data2 = calib_data[i],
                                data3 = calib_data[i];
       calib_result res0 = res, res1 = res, res2 = res, res3 = res;
       res0.l[0] -= eps;
@@ -483,7 +483,7 @@ Eigen::MatrixXd cSolver::compute_fim(const std::vector<DataSelection::sync_data>
     }
     // jacobian_l[1]
     {
-      DataSelection::sync_data data0 = calib_data[i], data1 = calib_data[i], data2 = calib_data[i],
+      data_selection::SyncData data0 = calib_data[i], data1 = calib_data[i], data2 = calib_data[i],
                                data3 = calib_data[i];
       calib_result res0 = res, res1 = res, res2 = res, res3 = res;
       res0.l[1] -= eps;
@@ -502,7 +502,7 @@ Eigen::MatrixXd cSolver::compute_fim(const std::vector<DataSelection::sync_data>
     }
     // jacobian_l[2]
     {
-      DataSelection::sync_data data0 = calib_data[i], data1 = calib_data[i], data2 = calib_data[i],
+      data_selection::SyncData data0 = calib_data[i], data1 = calib_data[i], data2 = calib_data[i],
                                data3 = calib_data[i];
       calib_result res0 = res, res1 = res, res2 = res, res3 = res;
       res0.l[2] -= eps;

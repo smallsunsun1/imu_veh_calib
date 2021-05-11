@@ -5,12 +5,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 find_package(Eigen3 REQUIRED)
-find_package(OpenCV REQUIRED)
 find_package(Ceres REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${Ceres_INCLUDE_DIRS})
-link_libraries(${OpenCV_LIBRARIES})
 
 add_subdirectory(src)
 add_executable(main2 main.cpp)

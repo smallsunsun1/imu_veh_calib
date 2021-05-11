@@ -7,28 +7,20 @@
 #include <cstdio>
 #include <fstream>
 #include <mutex>
-#include <opencv2/opencv.hpp>
 #include <queue>
 #include <thread>
 
 #include "data_selection.h"
 #include "solveQyx.h"
 
-// record the first frame calculated successfully
-bool fisrt_frame = true;
-Eigen::Matrix3d Rwc0;
-Eigen::Vector3d twc0;
-// decide if the frequent is decreased
-bool halfFreq = false;
-int frame_index = 0;
+using namespace data_selection;
 
 // extract images with same timestamp from two topics
-void CalcProcess(DataSelection::OdomDataList& odom_datas, DataSelection::CamDataList& cam_datas) {
+void CalcProcess(data_selection::OdomDataList& odom_datas, data_selection::CamDataList& cam_datas) {
   SolveQyx cSolveQyx;
   std::cout << "============ calibrating... ===============" << std::endl;
-  DataSelection ds;
-  std::vector<DataSelection::sync_data> sync_result;
-  ds.selectData(odom_datas, cam_datas, sync_result);
+  std::vector<data_selection::SyncData> sync_result;
+  SelectData(odom_datas, cam_datas, sync_result);
 
   // first estimate the Ryx and correct tlc of camera
   Eigen::Matrix3d Ryx;
@@ -47,20 +39,9 @@ void CalcProcess(DataSelection::OdomDataList& odom_datas, DataSelection::CamData
   cSolveQyx.refineExPara(sync_result, paras, Ryx);
 }
 
-int main(int argc, char** argv) {
-  std::string config_file = argv[1];
-  std::cout << "config file: " << config_file << std::endl;
-  cv::FileStorage fsSettings(config_file, cv::FileStorage::READ);
-  if (!fsSettings.isOpened()) {
-    std::cerr << "ERROR: Wrong path to settings" << std::endl;
-  }
-
-  std::string WHEEL_TOPIC, IMAGE_TOPIC;
-  fsSettings["wheel_topic"] >> WHEEL_TOPIC;
-  fsSettings["image_topic"] >> IMAGE_TOPIC;
-
-  std::cout << "IMAGE TOPIC: " << IMAGE_TOPIC << " : "
-            << "WHEEL TOPIC: " << WHEEL_TOPIC << std::endl;
+int main(int argc, char* argv[]) {
+  std::string odom_data_file = argv[1];
+  std::string camera_data_file = argv[2];
 
   return 0;
 }

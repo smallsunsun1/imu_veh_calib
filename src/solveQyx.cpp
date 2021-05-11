@@ -3,6 +3,7 @@
 #include <cstddef>
 
 #include "Eigen/Eigen"
+#include "data_selection.h"
 
 #define Pi 3.1415926
 
@@ -13,7 +14,7 @@
 SolveQyx::SolveQyx() {}
 
 // 这个函数用于计算yx方向的旋转
-bool SolveQyx::estimateRyx(std::vector<DataSelection::sync_data> sync_result, Eigen::Matrix3d &Ryx) {
+bool SolveQyx::estimateRyx(std::vector<data_selection::SyncData> sync_result, Eigen::Matrix3d &Ryx) {
   size_t motionCnt = sync_result.size();
   Eigen::MatrixXd M(motionCnt * 4, 4);
   M.setZero();
@@ -70,14 +71,14 @@ bool SolveQyx::estimateRyx(std::vector<DataSelection::sync_data> sync_result, Ei
 }
 
 // 根据上面函数计算得到的yx结果，来对相机的坐标信息进行变换
-void SolveQyx::correctCamera(std::vector<DataSelection::sync_data> &sync_result,
-                             std::vector<DataSelection::cam_data> &camDatas, Eigen::Matrix3d Ryx) {
+void SolveQyx::correctCamera(std::vector<data_selection::SyncData> &sync_result,
+                             std::vector<data_selection::CamData> &camDatas, Eigen::Matrix3d Ryx) {
   if (sync_result.size() != camDatas.size()) {
     std::cerr << "ERROR!! correctCamera: sync_result.size() != camDatas.size()" << std::endl;
     return;
   }
-  std::vector<DataSelection::sync_data> sync_tmp;
-  std::vector<DataSelection::cam_data> cam_tmp;
+  std::vector<data_selection::SyncData> sync_tmp;
+  std::vector<data_selection::CamData> cam_tmp;
   for (unsigned int i = 0; i < sync_result.size(); ++i) {
     Eigen::Vector3d tlc_cam = camDatas[i].tlc;
     Eigen::Vector3d tlc_corrected = Ryx * tlc_cam;
@@ -92,7 +93,7 @@ void SolveQyx::correctCamera(std::vector<DataSelection::sync_data> &sync_result,
   camDatas.swap(cam_tmp);
 }
 
-void SolveQyx::refineExPara(std::vector<DataSelection::sync_data> sync_result, cSolver::calib_result &internelPara,
+void SolveQyx::refineExPara(std::vector<data_selection::SyncData> sync_result, cSolver::calib_result &internelPara,
                             Eigen::Matrix3d Ryx) {
   std::cout << std::endl << "there are  " << sync_result.size() << " datas for refining extrinsic paras" << std::endl;
   // 相机和Odometry的位姿变换矩阵

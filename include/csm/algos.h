@@ -1,8 +1,6 @@
 #ifndef H_SCAN_MATCHING_LIB
 #define H_SCAN_MATCHING_LIB
 
-//#include <gsl/gsl_vector.h>
-//#include <gsl/gsl_matrix.h>
 #include "gsl_eigen/gsl_eigen.h"
 
 #include "laser_data.h"

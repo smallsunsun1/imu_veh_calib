@@ -2,6 +2,7 @@
 #define SOLVEQXY_H
 
 #include "ceres/ceres.h"
+#include "data_selection.h"
 #include "solver.h"
 
 template <typename T>
@@ -32,11 +33,11 @@ class SolveQyx {
  public:
   SolveQyx();
 
-  bool estimateRyx(std::vector<DataSelection::sync_data> sync_result, Eigen::Matrix3d &Ryx);
-  void correctCamera(std::vector<DataSelection::sync_data> &sync_result, std::vector<DataSelection::cam_data> &camDatas,
+  bool estimateRyx(std::vector<data_selection::SyncData> sync_result, Eigen::Matrix3d &Ryx);
+  void correctCamera(std::vector<data_selection::SyncData> &sync_result, std::vector<data_selection::CamData> &camDatas,
                      Eigen::Matrix3d Ryx);
 
-  void refineExPara(std::vector<DataSelection::sync_data> sync_result, cSolver::calib_result &internelPara,
+  void refineExPara(std::vector<data_selection::SyncData> sync_result, cSolver::calib_result &internelPara,
                     Eigen::Matrix3d Ryx);
   // bool esExParaByCeres(const std::vector<data_selection::sync_data> &calib_data,cSolver::calib_result &res);
 

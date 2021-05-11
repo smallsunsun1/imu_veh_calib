@@ -9,24 +9,23 @@
 #include <string>
 #include <vector>
 
-class DataSelection {
- public:
-  struct odo_data {
+namespace data_selection {
+  struct OdomData {
     double time;     // 对应时间
     double v_left;   // 左轮速度
     double v_right;  // 右轮速度
   };
-  struct cam_data {
+  struct CamData {
     double start_t;        // 相机数据开始时间
     double end_t;          // 相机数据结束时间
-    double deltaTheta;     // 旋转角度
+    double delta_theta;     // 旋转角度
     Eigen::Vector3d axis;  // 旋转轴
     Eigen::Matrix3d Rcl;   // 旋转矩阵
     Eigen::Vector3d tlc;   // 平移向量
   };
 
   // 两两匹配的同步数据结构体，用于存储同步后的Odom和Cam数据
-  struct sync_data {
+  struct SyncData {
     // 阶段
     double T;
     // 左右轮速度
@@ -50,18 +49,17 @@ class DataSelection {
     double angle;
     // 轴
     Eigen::Vector3d axis;
-    double startTime;
+    double start_time;
   };
-  void startPosAlign(std::vector<odo_data> &odoDatas, std::vector<cam_data> &camDatas);
-  void selectData(std::vector<odo_data> &odoDatas, std::vector<cam_data> &camDatas,
-                  std::vector<DataSelection::sync_data> &sync_result);
+  void StartPosAlign(std::vector<OdomData> &odo_datas, std::vector<CamData> &cam_datas);
+  void SelectData(std::vector<OdomData> &odo_datas, std::vector<CamData> &cam_datas,
+                  std::vector<data_selection::SyncData> &sync_result);
 
-  void camOdoAlign(std::vector<odo_data> &odoDatas, std::vector<cam_data> &camDatas,
-                   std::vector<sync_data> &sync_result);
-  using OdomDataList = std::vector<DataSelection::odo_data>;
-  using CamDataList = std::vector<DataSelection::cam_data>;
-  using SyncDataList = std::vector<DataSelection::sync_data>;
-  DataSelection();
+  void CamOdoAlign(std::vector<OdomData> &odo_datas, std::vector<CamData> &cam_datas,
+                   std::vector<SyncData> &sync_result);
+  using OdomDataList = std::vector<data_selection::OdomData>;
+  using CamDataList = std::vector<data_selection::CamData>;
+  using SyncDataList = std::vector<data_selection::SyncData>;
 };
 
 #endif /* INCLUDE_DATA_SELECTION_ */
