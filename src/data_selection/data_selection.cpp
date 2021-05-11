@@ -4,8 +4,7 @@
 
 namespace data_selection {
 
-void SelectData(OdomDataList &odoDatas, CamDataList &camDatas,
-                               std::vector<data_selection::SyncData> &sync_result) {
+void SelectData(OdomDataList &odoDatas, CamDataList &camDatas, std::vector<data_selection::SyncData> &sync_result) {
   StartPosAlign(odoDatas, camDatas);
   // get rid of cam data ( deltaTheta = nan, tlc_length<1e-4,axis(1)<0.96), and align cam and odo data
   CamOdoAlign(odoDatas, camDatas, sync_result);
@@ -34,8 +33,8 @@ void SelectData(OdomDataList &odoDatas, CamDataList &camDatas,
   camDatas.swap(cam_matches);
   odoDatas.swap(odo_matches);
 }
-void CamOdoAlign(OdomDataList &odoDatas, CamDataList &camDatas,
-                                std::vector<data_selection::SyncData> &sync_result) {
+
+void CamOdoAlign(OdomDataList &odoDatas, CamDataList &camDatas, SyncDataList &sync_result) {
   int id_odo = 2;
   OdomDataList odoDatas_tmp;
   CamDataList camDatas_tmp;
@@ -47,7 +46,7 @@ void CamOdoAlign(OdomDataList &odoDatas, CamDataList &camDatas,
     if (tlc_length < 1e-4) continue;
     if (camDatas[i].axis(1) > -0.96) continue;
 
-    data_selection::OdomData odo_start, odo_end;
+    OdomData odo_start, odo_end;
     id_odo -= 2;
     double t_interval = fabs(odoDatas[id_odo].time - camDatas[i].start_t);
     while (fabs(odoDatas[++id_odo].time - camDatas[i].start_t) < t_interval)
@@ -109,7 +108,7 @@ void CamOdoAlign(OdomDataList &odoDatas, CamDataList &camDatas,
     odoDatas[odo_end_id].v_right = v_right_end;
 
     // get the average ang_vel and lin_vel between camDatas[i].start_t and camDatas[i].end_t
-    data_selection::OdomData odo_tmp;             // odo_tmp
+    data_selection::OdomData odo_tmp;            // odo_tmp
     odo_tmp.time = odoDatas[odo_start_id].time;  // odo_tmp
     data_selection::SyncData sync_tmp;
     if (odo_end_id - odo_start_id > 1) {
@@ -206,5 +205,4 @@ void StartPosAlign(OdomDataList &odoDatas, CamDataList &camDatas) {
               << std::endl;
   }
 }
-
-}
+}  // namespace data_selection

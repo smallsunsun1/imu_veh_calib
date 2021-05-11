@@ -1,8 +1,9 @@
-﻿#ifndef CALIB_UTILS_H
-#define CALIB_UTILS_H
+﻿#ifndef INCLUDE_UTILS_
+#define INCLUDE_UTILS_
 
-#include <iostream>
 #include <string>
+
+#include "data_selection.h"
 
 const std::string RESET = "\033[0m";
 const std::string BLACK = "0m";
@@ -28,4 +29,21 @@ const std::string BACKGROUND = "\033[4";
  */
 std::string colouredString(std::string str, std::string colour, std::string option);
 
-#endif
+/*
+ * 用于字符串切分的函数
+ */
+std::vector<std::string> StrSplit(const std::string& str_data, const std::string& seperator);
+
+/*
+ * 使用该函数的必备条件是输入文件内的数据格式为：
+ * time,v_left,v_right
+ */
+data_selection::OdomDataList LoadOdomData(const std::string& filename);
+
+/*
+ * 使用该函数的必备条件是输入文件内的数据格式为：
+ * start_time, end_time, delta_theta, angle_axis_x, angle_axis_y, angle_axis_z
+ */
+data_selection::CamDataList LoadCamData(const std::string& filename);
+
+#endif /* INCLUDE_UTILS_ */

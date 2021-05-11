@@ -12,6 +12,7 @@
 
 #include "data_selection.h"
 #include "solveQyx.h"
+#include "utils.h"
 
 using namespace data_selection;
 
@@ -42,6 +43,10 @@ void CalcProcess(data_selection::OdomDataList& odom_datas, data_selection::CamDa
 int main(int argc, char* argv[]) {
   std::string odom_data_file = argv[1];
   std::string camera_data_file = argv[2];
+  data_selection::OdomDataList odom_datas = LoadOdomData(odom_data_file);
+  data_selection::CamDataList cam_datas = LoadCamData(camera_data_file);
+
+  CalcProcess(odom_datas, cam_datas);
 
   return 0;
 }

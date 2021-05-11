@@ -3,6 +3,9 @@
 #include <cstddef>
 
 #include "Eigen/Eigen"
+#include "Eigen/src/Core/Matrix.h"
+#include "Eigen/src/Core/util/Memory.h"
+#include "Eigen/src/Geometry/Quaternion.h"
 #include "data_selection.h"
 
 #define Pi 3.1415926
@@ -97,9 +100,12 @@ void SolveQyx::refineExPara(std::vector<data_selection::SyncData> sync_result, c
                             Eigen::Matrix3d Ryx) {
   std::cout << std::endl << "there are  " << sync_result.size() << " datas for refining extrinsic paras" << std::endl;
   // 相机和Odometry的位姿变换矩阵
-  std::vector<Eigen::Quaterniond> q_cam, q_odo;
+  std::vector<Eigen::Quaterniond> q_cam;
+  std::vector<Eigen::Quaterniond> q_odo;
   // 相机和Odometry在相应坐标系下的位置信息
-  std::vector<Eigen::Vector3d> t_cam, t_odo;
+  // TODO(jhsun)在O3和march=native模式下，这里可能会core dump，完美的修改方式是c++17编译或修改代码
+  std::vector<Eigen::Vector3d> t_cam;
+  std::vector<Eigen::Vector3d> t_odo;
   // 获取Odom需要标定的内参，分别是左轮半径，右轮半径以及两轮之间的距离半径
   double r_L = internelPara.radius_l, r_R = internelPara.radius_r, axle = internelPara.axle;
   // 获取Camera和Odom之间的平移向量rx和ry
@@ -233,7 +239,6 @@ void SolveQyx::refineEstimate(Eigen::Matrix4d &Trc, double scale, const std::vec
         quats_odo.at(i), tvecs_odo.at(i), quats_cam.at(i), tvecs_cam.at(i)));  //  residual : 6 ,  rotation: 4
 
 #ifdef LOSSFUNCTION
-    // ceres::LossFunctionWrapper* loss_function(new ceres::HuberLoss(1.0), ceres::TAKE_OWNERSHIP);
     ceres::LossFunction *loss_function = new ceres::HuberLoss(1.0);
     problem.AddResidualBlock(costfunction, loss_function, q_coeffs, t_coeffs);
 #else
