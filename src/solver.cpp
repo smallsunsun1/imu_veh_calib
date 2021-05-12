@@ -147,6 +147,7 @@ bool CSolver::Solve(const std::vector<data_selection::SyncData> &calib_data, int
   Eigen::Vector2d y = Eigen::Vector2d::Zero();
   y = A.colPivHouseholderQr().solve(g);
 
+  // Here y is equal to J21, J22 results
   std::cout << "J21 = " << y(0) << " , J22 = " << y(1) << std::endl;
 
   J21 = y(0);
@@ -170,7 +171,7 @@ bool CSolver::Solve(const std::vector<data_selection::SyncData> &calib_data, int
   // int nused = 0;
   for (int k = 0; k < n; k++) {
     const data_selection::SyncData &t = calib_data[k];
-    o_theta = t.T * (J21 * t.velocity_left + J22 * t.velocity_right);
+    o_theta = t.T * (J21 * t.velocity_left + J22 * t.velocity_right);  // 对应知乎oR(theta)
     // double w0 = o_theta / t.T;
 
     if (fabs(o_theta) > 1e-12) {
@@ -183,11 +184,13 @@ bool CSolver::Solve(const std::vector<data_selection::SyncData> &calib_data, int
       t2 = 0;
     }
 
+    // 计算得到左右轮在x,y方向上的偏移
     cx1 = 0.5 * t.T * (-J21 * t.velocity_left) * t1;
     cx2 = 0.5 * t.T * (J22 * t.velocity_right) * t1;
     cy1 = 0.5 * t.T * (-J21 * t.velocity_left) * t2;
     cy2 = 0.5 * t.T * (J22 * t.velocity_right) * t2;
 
+    // 现在的实验都是进入第一个if所处的mode
     if ((mode == 0) || (mode == 1)) {
       cx = cx1 + cx2;
       cy = cy1 + cy2;
@@ -226,9 +229,10 @@ bool CSolver::Solve(const std::vector<data_selection::SyncData> &calib_data, int
   res.l[1] = laser_y;
   res.l[2] = laser_th;
 
-  return 1;
+  return true;
 }
 
+// 拉格朗日数乘法
 Eigen::VectorXd CSolver::full_calibration_min(const Eigen::MatrixXd &M) {
   double m11 = M(0, 0);
   double m13 = M(0, 2);
@@ -294,11 +298,6 @@ Eigen::VectorXd CSolver::x_given_lambda(const Eigen::MatrixXd &M, const double &
 
   Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigen_solver(ZZ);
 
-  //  Eigen::EigenSolver<Eigen::MatrixXd> es;
-  //  es.compute(ZZ);
-
-  //  Eigen::VectorXd eigenvalues = es.pseudoEigenvalueMatrix();
-  //  Eigen::MatrixXd eigenvectors = es.pseudoEigenvectors();
   Eigen::VectorXd eigenvalues = eigen_solver.eigenvalues();
   Eigen::MatrixXd eigenvectors = eigen_solver.eigenvectors();
   // int colnum = eigenvalues.minCoeff();

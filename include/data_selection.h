@@ -26,7 +26,7 @@ struct CamData {
 
 // 两两匹配的同步数据结构体，用于存储同步后的Odom和Cam数据
 struct SyncData {
-  // 阶段
+  // 表示当前数据的时间间隔
   double T;
   // 左右轮速度
   double velocity_left;
