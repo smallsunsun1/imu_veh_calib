@@ -23,9 +23,12 @@ void CalcProcess(data_selection::OdomDataList& odom_datas, data_selection::CamDa
   std::vector<data_selection::SyncData> sync_result;
   SelectData(odom_datas, cam_datas, sync_result);
 
+  std::cout << "sync_result size: " << sync_result.size() << std::endl;
+
   // first estimate the Ryx and correct tlc of camera
   Eigen::Matrix3d Ryx;
   cSolveQyx.estimateRyx(sync_result, Ryx);
+  std::cout << "Ryx Matrix\n" << Ryx << std::endl;
   cSolveQyx.correctCamera(sync_result, cam_datas, Ryx);
 
   // calibrate r_L  r_R  axle  lx  ly  yaw

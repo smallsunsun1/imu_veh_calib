@@ -57,11 +57,19 @@ data_selection::CamDataList LoadCamData(const std::string& filename) {
     Eigen::Quaterniond angle_axis(std::stod(splited_data[3]), std::stod(splited_data[4]), std::stod(splited_data[5]),
                                   std::stod(splited_data[6]));
     angle_axis.normalize();
-    cam_temp.axis = angle_axis.vec();
-    // cam_temp.axis = {std::stod(splited_data[3]), std::stod(splited_data[4]), std::stod(splited_data[5])};
-    cam_temp.tlc = {};
-    cam_temp.Rcl = {};
-    results.push_back(cam_temp);
+    cam_temp.tlc = {std::stod(splited_data[11]), std::stod(splited_data[12]), std::stod(splited_data[13])};
+    Eigen::Quaterniond rot_value = {std::stod(splited_data[7]), std::stod(splited_data[8]), std::stod(splited_data[9]), std::stod(splited_data[10])};
+    cam_temp.Rcl = rot_value.toRotationMatrix();
+    Eigen::AngleAxisd rotate_axis2;
+    rotate_axis2.fromRotationMatrix(cam_temp.Rcl);
+    cam_temp.axis = rotate_axis2.axis();
+    if (cam_temp.axis(1) > 0) {
+      cam_temp.delta_theta *= -1;
+      cam_temp.axis *= -1;
+    }
+
+    results.push_back(std::move(cam_temp));
   }
   return results;
 }
+

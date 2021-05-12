@@ -2,8 +2,11 @@
 #define INCLUDE_UTILS_
 
 #include <string>
+#include <iostream>
 
 #include "data_selection.h"
+
+#define DEBUG_LOG() std::cout << "Debug FILE: " << __FILE__ << "DEBUG LINE: " << __LINE__ << std::endl
 
 const std::string RESET = "\033[0m";
 const std::string BLACK = "0m";
@@ -45,5 +48,6 @@ data_selection::OdomDataList LoadOdomData(const std::string& filename);
  * start_time, end_time, delta_theta, angle_axis_x, angle_axis_y, angle_axis_z
  */
 data_selection::CamDataList LoadCamData(const std::string& filename);
+
 
 #endif /* INCLUDE_UTILS_ */

@@ -33,6 +33,7 @@ bool SolveQyx::estimateRyx(std::vector<data_selection::SyncData> sync_result, Ei
   // M.conservativeResize((id-1)*4,4);
 
   // TODO:: M^T * M
+  // std::cout << M << std::endl;
   Eigen::JacobiSVD<Eigen::MatrixXd> svd(M, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
   Eigen::Vector4d v1 = svd.matrixV().block<4, 1>(0, 2);
@@ -117,9 +118,11 @@ void SolveQyx::refineExPara(std::vector<data_selection::SyncData> sync_result, c
     t_cam.push_back(sync_result[i].tcl_cam);
 
     // 获取左右轮转速
-    double vel_L = sync_result[i].velocity_left, vel_R = sync_result[i].velocity_right;
+    double vel_L = sync_result[i].velocity_left;
+    double vel_R = sync_result[i].velocity_right;
     // 根据左右轮转速和左右轮半径计算速度V，根据左右轮转速和左右轮半径计算
-    double v = 0.5 * (r_L * vel_L + r_R * vel_R), omega = (r_R * vel_R - r_L * vel_L) / axle;
+    double v = 0.5 * (r_L * vel_L + r_R * vel_R);
+    double omega = (r_R * vel_R - r_L * vel_L) / axle;
     //
     Eigen::Quaterniond qlc_odo;
     //
