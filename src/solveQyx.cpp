@@ -17,7 +17,7 @@
 SolveQyx::SolveQyx() {}
 
 // 这个函数用于计算yx方向的旋转
-bool SolveQyx::estimateRyx(std::vector<data_selection::SyncData> sync_result, Eigen::Matrix3d &Ryx) {
+bool SolveQyx::EstimateRyx(std::vector<data_selection::SyncData> sync_result, Eigen::Matrix3d &Ryx) {
   size_t motionCnt = sync_result.size();
   Eigen::MatrixXd M(motionCnt * 4, 4);
   M.setZero();
@@ -61,7 +61,7 @@ bool SolveQyx::estimateRyx(std::vector<data_selection::SyncData> sync_result, Ei
 
     R_yxs[i] = q_yx.toRotationMatrix();
     double roll, pitch;
-    mat2RPY(R_yxs[i], roll, pitch, yaw[i]);
+    Mat2RPY(R_yxs[i], roll, pitch, yaw[i]);
     // std::cout<<"roll: "<<roll<<" pitch: "<<pitch<<" yaw: "<<yaw[i]<<std::endl;
   }
 
@@ -75,7 +75,7 @@ bool SolveQyx::estimateRyx(std::vector<data_selection::SyncData> sync_result, Ei
 }
 
 // 根据上面函数计算得到的yx结果，来对相机的坐标信息进行变换
-void SolveQyx::correctCamera(std::vector<data_selection::SyncData> &sync_result,
+void SolveQyx::CorrectCamera(std::vector<data_selection::SyncData> &sync_result,
                              std::vector<data_selection::CamData> &camDatas, Eigen::Matrix3d Ryx) {
   if (sync_result.size() != camDatas.size()) {
     std::cerr << "ERROR!! correctCamera: sync_result.size() != camDatas.size()" << std::endl;
@@ -86,6 +86,7 @@ void SolveQyx::correctCamera(std::vector<data_selection::SyncData> &sync_result,
   for (unsigned int i = 0; i < sync_result.size(); ++i) {
     Eigen::Vector3d tlc_cam = camDatas[i].tlc;
     Eigen::Vector3d tlc_corrected = Ryx * tlc_cam;
+
     if (tlc_corrected(1) * tlc_cam(2) < 0) continue;
 
     sync_result[i].scan_match_results[0] = tlc_corrected[0];
@@ -97,7 +98,7 @@ void SolveQyx::correctCamera(std::vector<data_selection::SyncData> &sync_result,
   camDatas.swap(cam_tmp);
 }
 
-void SolveQyx::refineExPara(std::vector<data_selection::SyncData> sync_result, cSolver::calib_result &internelPara,
+void SolveQyx::RefineExPara(std::vector<data_selection::SyncData> sync_result, cSolver::calib_result &internelPara,
                             Eigen::Matrix3d Ryx) {
   std::cout << std::endl << "there are  " << sync_result.size() << " datas for refining extrinsic paras" << std::endl;
   // 相机和Odometry的位姿变换矩阵
@@ -159,7 +160,7 @@ void SolveQyx::refineExPara(std::vector<data_selection::SyncData> sync_result, c
 
   Eigen::Matrix3d Rrc = Eigen::AngleAxisd(internelPara.l[2], Eigen::Vector3d::UnitZ()) * Ryx;
   Eigen::Vector3d rotation_vector_rc;
-  q2Euler_zyx(Eigen::Quaterniond(Rrc), rotation_vector_rc);
+  Q2EulerZYX(Eigen::Quaterniond(Rrc), rotation_vector_rc);
   std::cout << std::endl;
   std::cout << "before refine: Rrc(YPR) = " << rotation_vector_rc[0] << " " << rotation_vector_rc[1] << " "
             << rotation_vector_rc[2] << std::endl;
@@ -168,9 +169,9 @@ void SolveQyx::refineExPara(std::vector<data_selection::SyncData> sync_result, c
   Eigen::Matrix4d Trc = Eigen::Matrix4d::Identity();
   Trc.block<3, 3>(0, 0) = Rrc;
   Trc.block<2, 1>(0, 3) = trc;
-  refineEstimate(Trc, 1.0, q_odo, t_odo, q_cam, t_cam);
+  RefineEstimate(Trc, 1.0, q_odo, t_odo, q_cam, t_cam);
   Eigen::Vector3d Rrc_zyx;
-  q2Euler_zyx(Eigen::Quaterniond(Trc.block<3, 3>(0, 0)), Rrc_zyx);
+  Q2EulerZYX(Eigen::Quaterniond(Trc.block<3, 3>(0, 0)), Rrc_zyx);
   std::cout << std::endl
             << "after refine: Rrc(YPR) = " << Rrc_zyx[0] << "  " << Rrc_zyx[1] << "  " << Rrc_zyx[2] << std::endl;
   std::cout << "after refine trc = " << Trc(0, 3) << "  " << Trc(1, 3) << std::endl;
@@ -217,7 +218,7 @@ void SolveQyx::refineExPara(std::vector<data_selection::SyncData> sync_result, c
   std::cout << std::endl;
 }
 
-void SolveQyx::q2Euler_zyx(Eigen::Quaterniond q, Eigen::Vector3d &res) {
+void SolveQyx::Q2EulerZYX(Eigen::Quaterniond q, Eigen::Vector3d &res) {
   double r11 = 2 * (q.x() * q.y() + q.w() * q.z());
   double r12 = q.w() * q.w() + q.x() * q.x() - q.y() * q.y() - q.z() * q.z();
   double r21 = -2 * (q.x() * q.z() - q.w() * q.y());
@@ -229,7 +230,7 @@ void SolveQyx::q2Euler_zyx(Eigen::Quaterniond q, Eigen::Vector3d &res) {
 }
 
 //#define LOSSFUNCTION
-void SolveQyx::refineEstimate(Eigen::Matrix4d &Trc, double scale, const std::vector<Eigen::Quaterniond> &quats_odo,
+void SolveQyx::RefineEstimate(Eigen::Matrix4d &Trc, double scale, const std::vector<Eigen::Quaterniond> &quats_odo,
                               const std::vector<Eigen::Vector3d> &tvecs_odo,
                               const std::vector<Eigen::Quaterniond> &quats_cam,
                               const std::vector<Eigen::Vector3d> &tvecs_cam) {
@@ -262,7 +263,7 @@ void SolveQyx::refineEstimate(Eigen::Matrix4d &Trc, double scale, const std::vec
   Trc.block<3, 1>(0, 3) << t_coeffs[0], t_coeffs[1], t_coeffs[2];
 }
 
-bool SolveQyx::estimateRyx2(const std::vector<Eigen::Quaterniond> &quats_odo,
+bool SolveQyx::EstimateRyx2(const std::vector<Eigen::Quaterniond> &quats_odo,
                             const std::vector<Eigen::Vector3d> &tvecs_odo,
                             const std::vector<Eigen::Quaterniond> &quats_cam,
                             const std::vector<Eigen::Vector3d> &tvecs_cam, Eigen::Matrix3d &R_yx) {
@@ -308,7 +309,7 @@ bool SolveQyx::estimateRyx2(const std::vector<Eigen::Quaterniond> &quats_odo,
 
     R_yxs[i] = q_yx.toRotationMatrix();
     double roll, pitch;
-    mat2RPY(R_yxs[i], roll, pitch, yaw[i]);
+    Mat2RPY(R_yxs[i], roll, pitch, yaw[i]);
     std::cout << "roll: " << roll << " pitch: " << pitch << " yaw: " << yaw[i] << std::endl;
   }
 

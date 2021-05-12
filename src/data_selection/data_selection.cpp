@@ -21,6 +21,7 @@ void SelectData(OdomDataList &odo_datas, CamDataList &cam_datas, std::vector<dat
     if (fabs(odo_datas[i].v_left) < 1e-3 || fabs(odo_datas[i].v_right) < 1e-3) continue;
     // the sign is opposite
     if ((odo_datas[i].v_right - odo_datas[i].v_left) * cam_datas[i].delta_theta < 0.0)  // rL == rR
+    // if (odo_datas[i].v_right - odo_datas[i].v_left < 0.0)
     {
       nFlagDiff++;
       continue;
@@ -42,13 +43,11 @@ void CamOdoAlign(OdomDataList &odo_datas, CamDataList &cam_datas, SyncDataList &
 
   for (int i = 3; unsigned(i) < cam_datas.size() - 3; ++i) {
     if (std::isnan(cam_datas[i].delta_theta)) {
-      DEBUG_LOG();
       continue;
     }
 
     double tlc_length = cam_datas[i].tlc.norm();
     if (tlc_length < 1e-4) {
-      DEBUG_LOG();
       continue;
     }
     
@@ -73,7 +72,6 @@ void CamOdoAlign(OdomDataList &odo_datas, CamDataList &cam_datas, SyncDataList &
     odo_end = odo_datas[odo_end_id];
 
     if (odo_end_id - odo_start_id == 0) {
-      DEBUG_LOG();
       continue;
     }
 

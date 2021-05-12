@@ -108,8 +108,6 @@ void cSolver::calib(std::vector<data_selection::SyncData> &calib_data, int outli
             << "cam-odom yaw: " << res.l[2] << '\n'
             << "Left wheel radius: " << res.radius_l << '\n'
             << "Right wheel radius: " << res.radius_r << std::endl;
-
-  return;
 }
 
 bool cSolver::solve(const std::vector<data_selection::SyncData> &calib_data, int mode, double max_cond_number,

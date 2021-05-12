@@ -23,7 +23,7 @@ Eigen::Matrix<T, 4, 4> QuaternionMultMatRight(const Eigen::Quaternion<T> &q) {
  *  Rotation matrix to euler
  */
 template <typename T>
-void mat2RPY(const Eigen::Matrix<T, 3, 3> &m, T &roll, T &pitch, T &yaw) {
+void Mat2RPY(const Eigen::Matrix<T, 3, 3> &m, T &roll, T &pitch, T &yaw) {
   roll = atan2(m(2, 1), m(2, 2));
   pitch = atan2(-m(2, 0), sqrt(m(2, 1) * m(2, 1) + m(2, 2) * m(2, 2)));
   yaw = atan2(m(1, 0), m(0, 0));
@@ -33,22 +33,22 @@ class SolveQyx {
  public:
   SolveQyx();
 
-  bool estimateRyx(std::vector<data_selection::SyncData> sync_result, Eigen::Matrix3d &Ryx);
-  void correctCamera(std::vector<data_selection::SyncData> &sync_result, std::vector<data_selection::CamData> &camDatas,
+  bool EstimateRyx(std::vector<data_selection::SyncData> sync_result, Eigen::Matrix3d &Ryx);
+  void CorrectCamera(std::vector<data_selection::SyncData> &sync_result, std::vector<data_selection::CamData> &camDatas,
                      Eigen::Matrix3d Ryx);
 
-  void refineExPara(std::vector<data_selection::SyncData> sync_result, cSolver::calib_result &internelPara,
+  void RefineExPara(std::vector<data_selection::SyncData> sync_result, cSolver::calib_result &internelPara,
                     Eigen::Matrix3d Ryx);
   // bool esExParaByCeres(const std::vector<data_selection::sync_data> &calib_data,cSolver::calib_result &res);
 
-  void q2Euler_zyx(Eigen::Quaterniond q, Eigen::Vector3d &res);
+  void Q2EulerZYX(Eigen::Quaterniond q, Eigen::Vector3d &res);
 
  private:
-  bool estimateRyx2(const std::vector<Eigen::Quaterniond> &quats_odo, const std::vector<Eigen::Vector3d> &tvecs_odo,
+  bool EstimateRyx2(const std::vector<Eigen::Quaterniond> &quats_odo, const std::vector<Eigen::Vector3d> &tvecs_odo,
                     const std::vector<Eigen::Quaterniond> &quats_cam, const std::vector<Eigen::Vector3d> &tvecs_cam,
                     Eigen::Matrix3d &R_yx);
 
-  void refineEstimate(Eigen::Matrix4d &Trc, double scale, const std::vector<Eigen::Quaterniond> &quats_odo,
+  void RefineEstimate(Eigen::Matrix4d &Trc, double scale, const std::vector<Eigen::Quaterniond> &quats_odo,
                       const std::vector<Eigen::Vector3d> &tvecs_odo, const std::vector<Eigen::Quaterniond> &quats_cam,
                       const std::vector<Eigen::Vector3d> &tvecs_cam);
 
@@ -86,7 +86,7 @@ class CameraOdomErr {
     Eigen::Matrix<T, 3, 3> R_err = q_err.toRotationMatrix();
 
     T roll, pitch, yaw;
-    mat2RPY(R_err, roll, pitch, yaw);
+    Mat2RPY(R_err, roll, pitch, yaw);
 
     residuals[0] = t_err[0];
     residuals[1] = t_err[1];

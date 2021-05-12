@@ -27,9 +27,9 @@ void CalcProcess(data_selection::OdomDataList& odom_datas, data_selection::CamDa
 
   // first estimate the Ryx and correct tlc of camera
   Eigen::Matrix3d Ryx;
-  cSolveQyx.estimateRyx(sync_result, Ryx);
+  cSolveQyx.EstimateRyx(sync_result, Ryx);
   std::cout << "Ryx Matrix\n" << Ryx << std::endl;
-  cSolveQyx.correctCamera(sync_result, cam_datas, Ryx);
+  cSolveQyx.CorrectCamera(sync_result, cam_datas, Ryx);
 
   // calibrate r_L  r_R  axle  lx  ly  yaw
   cSolver cSolve;
@@ -37,10 +37,10 @@ void CalcProcess(data_selection::OdomDataList& odom_datas, data_selection::CamDa
   cSolve.calib(sync_result, 4, paras);  // by svd
 
   // secondly estimate the Ryx
-  cSolveQyx.estimateRyx(sync_result, Ryx);
+  cSolveQyx.EstimateRyx(sync_result, Ryx);
 
   // refine all the extrinal parameters
-  cSolveQyx.refineExPara(sync_result, paras, Ryx);
+  cSolveQyx.RefineExPara(sync_result, paras, Ryx);
 }
 
 int main(int argc, char* argv[]) {
