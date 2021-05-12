@@ -31,7 +31,7 @@ void Mat2RPY(const Eigen::Matrix<T, 3, 3> &m, T &roll, T &pitch, T &yaw) {
 
 class SolveQyx {
  public:
-  SolveQyx();
+  SolveQyx() = default;
 
   bool EstimateRyx(std::vector<data_selection::SyncData> sync_result, Eigen::Matrix3d &Ryx);
   void CorrectCamera(std::vector<data_selection::SyncData> &sync_result, std::vector<data_selection::CamData> &camDatas,
@@ -56,8 +56,10 @@ class SolveQyx {
 };
 class CameraOdomErr {
  private:
-  Eigen::Quaterniond m_q1, m_q2;
-  Eigen::Vector3d m_t1, m_t2;
+  Eigen::Quaterniond m_q1;
+  Eigen::Quaterniond m_q2;
+  Eigen::Vector3d m_t1;
+  Eigen::Vector3d m_t2;
 
  public:
   // odom cam

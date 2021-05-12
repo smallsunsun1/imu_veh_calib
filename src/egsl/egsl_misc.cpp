@@ -26,4 +26,3 @@ val egsl_vers(double theta) {
   double v[2] = {cos(theta), sin(theta)};
   return egsl_vFa(2, v);
 }
-

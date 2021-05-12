@@ -1,1 +1,1 @@
-./build/src/main -alsologtostderr -log_dir ./logs
+./build/src/main -alsologtostderr -log_dir ./logs  -logtostderr

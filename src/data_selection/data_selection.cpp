@@ -22,9 +22,7 @@ void SelectData(OdomDataList &odo_datas, CamDataList &cam_datas, std::vector<dat
   int nFlagDiff = 0;
   for (int i = 0; i < size; ++i) {
     if (fabs(odo_datas[i].v_left) < 1e-3 || fabs(odo_datas[i].v_right) < 1e-3) continue;
-    // the sign is opposite
     if ((odo_datas[i].v_right - odo_datas[i].v_left) * cam_datas[i].delta_theta < 0.0)  // rL == rR
-    // if (odo_datas[i].v_right - odo_datas[i].v_left < 0.0)
     {
       nFlagDiff++;
       continue;

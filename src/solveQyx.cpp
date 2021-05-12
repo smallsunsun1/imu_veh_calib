@@ -12,8 +12,6 @@
   *这里的代码主要依赖于https://zhuanlan.zhihu.com/p/101727151该页面的说明
 **/
 
-SolveQyx::SolveQyx() {}
-
 // 这个函数用于计算yx方向的旋转
 bool SolveQyx::EstimateRyx(std::vector<data_selection::SyncData> sync_result, Eigen::Matrix3d &Ryx) {
   size_t motionCnt = sync_result.size();
@@ -28,7 +26,6 @@ bool SolveQyx::EstimateRyx(std::vector<data_selection::SyncData> sync_result, Ei
         axis[0], axis[1], -1 + axis[2], 0;
     M.block<4, 4>(i * 4, 0) = sin(sync_result[i].angle) * M_tmp;
   }
-  // M.conservativeResize((id-1)*4,4);
 
   // TODO:: M^T * M
   // std::cout << M << std::endl;
@@ -60,7 +57,6 @@ bool SolveQyx::EstimateRyx(std::vector<data_selection::SyncData> sync_result, Ei
     R_yxs[i] = q_yx.toRotationMatrix();
     double roll, pitch;
     Mat2RPY(R_yxs[i], roll, pitch, yaw[i]);
-    // std::cout<<"roll: "<<roll<<" pitch: "<<pitch<<" yaw: "<<yaw[i]<<std::endl;
   }
 
   // q_yx  means yaw is zero. we choose the smaller yaw
@@ -98,7 +94,10 @@ void SolveQyx::CorrectCamera(std::vector<data_selection::SyncData> &sync_result,
 
 void SolveQyx::RefineExPara(std::vector<data_selection::SyncData> sync_result, CSolver::CalibResult &internelPara,
                             Eigen::Matrix3d Ryx) {
-  std::cout << std::endl << "there are  " << sync_result.size() << " datas for refining extrinsic paras" << std::endl;
+  // std::cout << std::endl << "there are  " << sync_result.size() << " datas for refining extrinsic paras" <<
+  // std::endl;
+  LOG(INFO) << "\n"
+            << "there are  " << sync_result.size() << " datas for refining extrinsic paras";
   // 相机和Odometry的位姿变换矩阵
   std::vector<Eigen::Quaterniond> q_cam;
   std::vector<Eigen::Quaterniond> q_odo;
@@ -127,7 +126,8 @@ void SolveQyx::RefineExPara(std::vector<data_selection::SyncData> sync_result, C
     //
     Eigen::Vector3d tlc_odo, tcl_odo;
     double o_theta = omega * sync_result[i].T;
-    double t1, t2;
+    double t1;
+    double t2;
     if (fabs(o_theta) > 1e-12) {
       t1 = sin(o_theta) / o_theta;
       t2 = (1 - cos(o_theta)) / o_theta;

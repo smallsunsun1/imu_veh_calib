@@ -1,13 +1,17 @@
 ﻿#include <iostream>
 #include "solver.h"
+
 #include "Eigen/Geometry"
 #include "data_selection.h"
+#include "glog/logging.h"
 #include "utils.h"
 
 CSolver::CSolver() {}
 
 void CSolver::Calib(std::vector<data_selection::SyncData> &calib_data, int outliers_iterations, CalibResult &res) {
-  std::cout << std::endl << "there are " << calib_data.size() << " datas for calibrating!" << std::endl;
+  // std::cout << std::endl << "there are " << calib_data.size() << " datas for calibrating!" << std::endl;
+  LOG(INFO) << "\n"
+            << "there are " << calib_data.size() << " datas for calibrating!";
   std::vector<data_selection::SyncData> calib_history[outliers_iterations + 1];
   // calib_result res;
   std::vector<data_selection::SyncData> outliers_data;
@@ -19,12 +23,6 @@ void CSolver::Calib(std::vector<data_selection::SyncData> &calib_data, int outli
     if (!Solve(calib_data, 0, 75, res)) {
       std::cout << colouredString("Failed calibration.", RED, BOLD) << std::endl;
       continue;
-    } else {
-      /*std::cout << '\n' << "-------Calibration Results-------" << '\n' << "Axle between wheels: " << res.axle << '\n'
-         << "cam-odom x: " << res.l[0] << '\n'
-                << "cam-odom y: " << res.l[1] << '\n' << "cam-odom yaw: " << res.l[2] << '\n' << "Left wheel radius: "
-         << res.radius_l << '\n'
-                << "Right wheel radius: " << res.radius_r << std::endl;*/
     }
 
     // Compute residuals
