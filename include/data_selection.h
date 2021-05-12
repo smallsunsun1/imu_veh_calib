@@ -12,8 +12,8 @@
 namespace data_selection {
 struct OdomData {
   double time;     // 对应时间
-  double v_left;   // 左轮速度
-  double v_right;  // 右轮速度
+  double v_left;   // 左轮角速度
+  double v_right;  // 右轮角速度
 };
 struct CamData {
   double start_t;        // 相机数据开始时间
@@ -31,7 +31,6 @@ struct SyncData {
   // 左右轮速度
   double velocity_left;
   double velocity_right;
-  // double velocity;
   // camera data : x y yaw , x  y from tlc (not tcl)
   double scan_match_results[3];  // correct lx ly by R_x
   // Estimated rototranslation based on odometry params.

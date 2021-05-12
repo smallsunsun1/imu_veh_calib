@@ -1,8 +1,8 @@
 ﻿#ifndef INCLUDE_UTILS_
 #define INCLUDE_UTILS_
 
-#include <string>
 #include <iostream>
+#include <string>
 
 #include "data_selection.h"
 
@@ -48,6 +48,5 @@ data_selection::OdomDataList LoadOdomData(const std::string& filename);
  * start_time, end_time, delta_theta, angle_axis_x, angle_axis_y, angle_axis_z
  */
 data_selection::CamDataList LoadCamData(const std::string& filename);
-
 
 #endif /* INCLUDE_UTILS_ */

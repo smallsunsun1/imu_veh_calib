@@ -37,7 +37,7 @@ class SolveQyx {
   void CorrectCamera(std::vector<data_selection::SyncData> &sync_result, std::vector<data_selection::CamData> &camDatas,
                      Eigen::Matrix3d Ryx);
 
-  void RefineExPara(std::vector<data_selection::SyncData> sync_result, cSolver::calib_result &internelPara,
+  void RefineExPara(std::vector<data_selection::SyncData> sync_result, CSolver::CalibResult &internelPara,
                     Eigen::Matrix3d Ryx);
   // bool esExParaByCeres(const std::vector<data_selection::sync_data> &calib_data,cSolver::calib_result &res);
 

@@ -98,7 +98,7 @@ void SolveQyx::CorrectCamera(std::vector<data_selection::SyncData> &sync_result,
   camDatas.swap(cam_tmp);
 }
 
-void SolveQyx::RefineExPara(std::vector<data_selection::SyncData> sync_result, cSolver::calib_result &internelPara,
+void SolveQyx::RefineExPara(std::vector<data_selection::SyncData> sync_result, CSolver::CalibResult &internelPara,
                             Eigen::Matrix3d Ryx) {
   std::cout << std::endl << "there are  " << sync_result.size() << " datas for refining extrinsic paras" << std::endl;
   // 相机和Odometry的位姿变换矩阵
@@ -182,7 +182,7 @@ void SolveQyx::RefineExPara(std::vector<data_selection::SyncData> sync_result, c
   internelPara.l[2] = Rrc_zyx[0];
 
   double laser_std_x, laser_std_y, laser_std_th;
-  cSolver cs;
+  CSolver cs;
   cs.estimate_noise(sync_result, internelPara, laser_std_x, laser_std_y, laser_std_th);
 
   /* Now compute the FIM */

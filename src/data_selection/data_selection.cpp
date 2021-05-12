@@ -50,7 +50,7 @@ void CamOdoAlign(OdomDataList &odo_datas, CamDataList &cam_datas, SyncDataList &
     if (tlc_length < 1e-4) {
       continue;
     }
-    
+
     if (cam_datas[i].axis(1) > -0.96) {
       std::cout << cam_datas[i].axis(1) << std::endl;
       continue;
@@ -100,14 +100,14 @@ void CamOdoAlign(OdomDataList &odo_datas, CamDataList &cam_datas, SyncDataList &
     odo_datas[odo_start_id].v_right = v_right_start;
 
     if (cam_datas[i].end_t > odo_end.time) {
-      float alpha =
-          (cam_datas[i].end_t - odo_datas[odo_end_id].time) / (odo_datas[odo_end_id + 1].time - odo_datas[odo_end_id].time);
+      float alpha = (cam_datas[i].end_t - odo_datas[odo_end_id].time) /
+                    (odo_datas[odo_end_id + 1].time - odo_datas[odo_end_id].time);
       alpha = fabs(alpha);
       v_left_end = (1 - alpha) * odo_datas[odo_end_id].v_left + alpha * odo_datas[odo_end_id + 1].v_left;
       v_right_end = (1 - alpha) * odo_datas[odo_end_id].v_right + alpha * odo_datas[odo_end_id + 1].v_right;
     } else if (cam_datas[i].end_t < odo_end.time) {
-      float alpha =
-          (odo_datas[odo_end_id].time - cam_datas[i].end_t) / (odo_datas[odo_end_id].time - odo_datas[odo_end_id - 1].time);
+      float alpha = (odo_datas[odo_end_id].time - cam_datas[i].end_t) /
+                    (odo_datas[odo_end_id].time - odo_datas[odo_end_id - 1].time);
       alpha = fabs(alpha);
       v_left_end = (1 - alpha) * odo_datas[odo_end_id].v_left + alpha * odo_datas[odo_end_id - 1].v_left;
       v_right_end = (1 - alpha) * odo_datas[odo_end_id].v_right + alpha * odo_datas[odo_end_id - 1].v_right;
@@ -120,13 +120,14 @@ void CamOdoAlign(OdomDataList &odo_datas, CamDataList &cam_datas, SyncDataList &
     odo_datas[odo_end_id].v_right = v_right_end;
 
     // get the average ang_vel and lin_vel between camDatas[i].start_t and camDatas[i].end_t
-    data_selection::OdomData odo_tmp;            // odo_tmp
+    data_selection::OdomData odo_tmp;             // odo_tmp
     odo_tmp.time = odo_datas[odo_start_id].time;  // odo_tmp
     data_selection::SyncData sync_tmp;
     if (odo_end_id - odo_start_id > 1) {
       double dis_left_sum = 0.0, dis_right_sum = 0.0;
       for (int j = odo_start_id; j < odo_end_id; j++) {
-        dis_left_sum += (odo_datas[j + 1].time - odo_datas[j].time) * (odo_datas[j + 1].v_left + odo_datas[j].v_left) / 2.0;
+        dis_left_sum +=
+            (odo_datas[j + 1].time - odo_datas[j].time) * (odo_datas[j + 1].v_left + odo_datas[j].v_left) / 2.0;
         dis_right_sum +=
             (odo_datas[j + 1].time - odo_datas[j].time) * (odo_datas[j + 1].v_right + odo_datas[j].v_right) / 2.0;
       }
@@ -210,7 +211,8 @@ void StartPosAlign(OdomDataList &odo_datas, CamDataList &cam_datas) {
     double delta_t = fabs(cam_datas[0].start_t - t0_odo);
 
     int cam_start = 0;
-    while (fabs(cam_datas[++cam_start].start_t - t0_odo) < delta_t) delta_t = fabs(cam_datas[cam_start].start_t - t0_odo);
+    while (fabs(cam_datas[++cam_start].start_t - t0_odo) < delta_t)
+      delta_t = fabs(cam_datas[cam_start].start_t - t0_odo);
     int cam_aligned = cam_start - 1;
     for (int i = 0; i < cam_aligned; ++i) cam_datas.erase(cam_datas.begin());
 

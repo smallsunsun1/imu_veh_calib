@@ -32,9 +32,9 @@ void CalcProcess(data_selection::OdomDataList& odom_datas, data_selection::CamDa
   cSolveQyx.CorrectCamera(sync_result, cam_datas, Ryx);
 
   // calibrate r_L  r_R  axle  lx  ly  yaw
-  cSolver cSolve;
-  cSolver::calib_result paras;          // radius_l,radius_r,axle,l[3]
-  cSolve.calib(sync_result, 4, paras);  // by svd
+  CSolver cSolve;
+  CSolver::CalibResult paras;          // radius_l,radius_r,axle,l[3]
+  cSolve.Calib(sync_result, 4, paras);  // by svd
 
   // secondly estimate the Ryx
   cSolveQyx.EstimateRyx(sync_result, Ryx);
