@@ -1,4 +1,7 @@
 #include "data_selection.h"
+
+#include "glog/logging.h"
+
 #include "utils.h"
 
 #define PI 3.1415926
@@ -30,7 +33,8 @@ void SelectData(OdomDataList &odo_datas, CamDataList &cam_datas, std::vector<dat
     cam_matches.push_back(cam_datas[i]);
     vec_sync_tmp.push_back(sync_result[i]);
   }
-  std::cout << "nFlagDiff = " << nFlagDiff << std::endl;
+  LOG(INFO) << "nFlagDiff = " << nFlagDiff;
+
   sync_result.swap(vec_sync_tmp);
   cam_datas.swap(cam_matches);
   odo_datas.swap(odo_matches);
@@ -52,7 +56,6 @@ void CamOdoAlign(OdomDataList &odo_datas, CamDataList &cam_datas, SyncDataList &
     }
 
     if (cam_datas[i].axis(1) > -0.96) {
-      std::cout << cam_datas[i].axis(1) << std::endl;
       continue;
     }
 
@@ -205,8 +208,7 @@ void StartPosAlign(OdomDataList &odo_datas, CamDataList &cam_datas) {
     odo_datas.erase(odo_datas.begin(), odo_datas.begin() + odo_aligned);
     // for (int i = 0; i < odo_aligned; ++i) odo_datas.erase(odo_datas.begin());
 
-    std::cout << std::fixed << "aligned start position1: " << cam_datas[0].start_t << "  " << odo_datas[0].time
-              << std::endl;
+    LOG(INFO) << std::fixed << "aligned start position1: " << cam_datas[0].start_t << "  " << odo_datas[0].time;
   } else if (t0_odo > t0_cam) {
     double delta_t = fabs(cam_datas[0].start_t - t0_odo);
 
@@ -214,10 +216,10 @@ void StartPosAlign(OdomDataList &odo_datas, CamDataList &cam_datas) {
     while (fabs(cam_datas[++cam_start].start_t - t0_odo) < delta_t)
       delta_t = fabs(cam_datas[cam_start].start_t - t0_odo);
     int cam_aligned = cam_start - 1;
-    for (int i = 0; i < cam_aligned; ++i) cam_datas.erase(cam_datas.begin());
+    cam_datas.erase(cam_datas.begin(), cam_datas.begin() + cam_aligned);
+    // for (int i = 0; i < cam_aligned; ++i) cam_datas.erase(cam_datas.begin());
 
-    std::cout << std::fixed << "aligned start position2 : " << cam_datas[0].start_t << "  " << odo_datas[0].time
-              << std::endl;
+    LOG(INFO) << std::fixed << "aligned start position2 : " << cam_datas[0].start_t << "  " << odo_datas[0].time;
   }
 }
 }  // namespace data_selection

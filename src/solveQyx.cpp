@@ -3,9 +3,7 @@
 #include <cstddef>
 
 #include "Eigen/Eigen"
-#include "Eigen/src/Core/Matrix.h"
-#include "Eigen/src/Core/util/Memory.h"
-#include "Eigen/src/Geometry/Quaternion.h"
+#include "Eigen/Geometry"
 #include "data_selection.h"
 
 #define Pi 3.1415926
